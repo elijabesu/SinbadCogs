@@ -7,7 +7,9 @@ import aiohttp
 import logging
 
 import feedparser
+import re
 import discord
+from discord.utils import find
 
 from redbot.core import commands, checks
 from redbot.core.config import Config
@@ -23,6 +25,8 @@ _ = Translator("RSS", __file__)
 log = logging.getLogger("red.sinbadcogs.rss")
 
 DONT_HTML_SCRUB = ["link", "source", "updated", "updated_parsed"]
+
+FIX_LINK = ["link"]
 
 USABLE_FIELDS = [
     "author",
@@ -151,8 +155,8 @@ class RSS(commands.Cog):
         last_sent = None
         for entry in to_send:
             color = destination.guild.me.color
-            kwargs = self.format_post(
-                entry, use_embed, color, feed_settings.get("template", None)
+            kwargs = await self.format_post(
+                entry, use_embed, color, destination.guild, feed_settings.get("template", None), feed_settings.get("role", None)
             )
             try:
                 await self.bot.send_filtered(destination, **kwargs)
@@ -162,7 +166,7 @@ class RSS(commands.Cog):
 
         return last_sent
 
-    def format_post(self, entry, embed: bool, color, template=None) -> dict:
+    async def format_post(self, entry, embed: bool, color, guild, template=None, role=None) -> dict:
 
         if template is None:
             if embed:
@@ -184,6 +188,10 @@ class RSS(commands.Cog):
         escaped_usable_fields = {k: maybe_clean(k, v) for k, v in data.items() if v}
 
         content = template.safe_substitute(**escaped_usable_fields)
+        url_ugly = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', content)
+        url_ugly = ''.join(url_ugly)
+        url_new = url_ugly[:url_ugly.find('?utm')]
+        content = content.replace(url_ugly, url_new)
 
         if embed:
             if len(content) > 1980:
@@ -193,11 +201,39 @@ class RSS(commands.Cog):
                 description=content, color=color, timestamp=timestamp
             )
             embed_data.set_footer(text=_("Published "))
-            return {"content": None, "embed": embed_data}
+            if role is None:
+                return {"content": None, "embed": embed_data}
+            else:
+                role = guild.get_role(int(role))
+                if not role.mentionable:
+                    await role.edit(mentionable=True)
+                    return {"content": f"{role.mention}", "embed": embed_data}
+                    await role.edit(mentionable=False)
+                else:
+                    return {"content": f"{role.mention}", "embed": embed_data}
         else:
-            if len(content) > 1950:
-                content = content[:1950] + _("... (Feed data too long)")
-            return {"content": content, "embed": None}
+            if role is None:
+                if len(content) > 1950:
+                    content = content[:1950] + _("... (Feed data too long)")
+                return {"content": content, "embed": None}
+            else:
+                role = guild.get_role(int(role))
+                if not role.mentionable:
+                    await role.edit(mentionable=True)
+                    mention = f"{role.mention} "
+                    if len(content) > 1950:
+                        content = mention + content[:1950] + _("... (Feed data too long)")
+                    else:
+                        content = mention + content
+                    return {"content": content, "embed": None}
+                    await role.edit(mentionable=False)
+                else:
+                    mention = f"{role.mention} "
+                    if len(content) > 1950:
+                        content = mention + content[:1950] + _("... (Feed data too long)")
+                    else:
+                        content = mention + content
+                    return {"content": content, "embed": None}
 
     async def bg_loop(self):
         await self.bot.wait_until_ready()
@@ -401,6 +437,15 @@ class RSS(commands.Cog):
         channel = channel or ctx.channel
         await self.config.channel(channel).set_raw(
             "feeds", feed, "embed_override", value=setting
+        )
+        await ctx.tick()
+
+    @rss.command(name="role")
+    async def rss_role(self, ctx: commands.Context, feed, channel: Optional[discord.TextChannel] = None, *, role: discord.Role):
+        """Sets role mention for the specified feed in this, or a provided channel"""
+        channel = channel or ctx.channel
+        await self.config.channel(channel).set_raw(
+            "feeds", feed, "role", value=role.id
         )
         await ctx.tick()
 
