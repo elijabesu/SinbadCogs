@@ -5,7 +5,8 @@
     ],
     "install_msg": "Don't use this, see `[p]help set ownernotifications` from Red 3.1.2 forward.",
     "name": "MessageBox",
-    "disabled": false,
+    "disabled": true,
+    "hidden": true,
     "short": "Deprecated, don't use.",
     "description": "replaces contact with a command dumping stuff in a channel",
     "tags": [
@@ -16,6 +17,5 @@
         "messagebox",
         "msgbox"
     ],
-    "hidden": true,
     "min_bot_version": "3.1.1"
 }

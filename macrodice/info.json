@@ -5,11 +5,11 @@
     ],
     "install_msg": "THis isn't very user friendly yet, but works and is ready for use.",
     "name": "MacroDice",
-    "disabled": false,
+    "disabled": true,
+    "hidden": true,
     "short": "",
     "description": "",
     "tags": [],
-    "hidden": true,
     "min_bot_version": "3.1.1",
     "requirements": [
         "dice"

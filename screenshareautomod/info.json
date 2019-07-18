@@ -4,10 +4,10 @@
     ],
     "install_msg": "If you need help, I have a channel in https://discord.gg/mb85deu",
     "name": "ScreenshareAutomod",
-    "disabled": false,
     "short": "Handle screenshare (ab)use",
     "description": "Handle screenshare (ab)use",
     "tags": [],
-    "hidden": false,
+    "disabled": true,
+    "hidden": true,
     "min_bot_version": "3.1.1"
 }

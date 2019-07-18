@@ -4,7 +4,8 @@
     ],
     "install_msg": "If you need help, I have a channel in https://discord.gg/mb85deu",
     "name": "RoomTools",
-    "disabled": false,
+    "disabled": true,
+    "hidden": true,
     "short": "Tools for temporary rooms",
     "description": "Never run out of voice lobbies again",
     "tags": [
@@ -13,6 +14,5 @@
         "temporary",
         "roomtools"
     ],
-    "hidden": false,
     "min_bot_version": "3.1.1"
 }

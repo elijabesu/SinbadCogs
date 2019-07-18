@@ -5,9 +5,9 @@
     ],
     "install_msg": "If you need help, I have a channel in https://discord.gg/mb85deu",
     "name": "EconomyTrickle",
-    "disabled": false,
     "short": "Gives active users credits",
     "description": "Gives active users credits. With configureable settings for activity, amount, and more.",
-    "hidden": false,
+    "disabled": true,
+    "hidden": true,
     "min_bot_version": "3.1.1"
 }

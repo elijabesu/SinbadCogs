@@ -5,7 +5,8 @@
     ],
     "install_msg": "If you need help, I have a channel in https://discord.gg/mb85deu",
     "name": "RoleManagement",
-    "disabled": false,
+    "disabled": true,
+    "hidden": true,
     "short": "Role searches, reactroles, requirements for roles, etc.",
     "description": "React roles with requirements, selfroles with requirements, role based member search and more.",
     "tags": [
@@ -15,6 +16,5 @@
         "role search",
         "massrole"
     ],
-    "hidden": false,
     "min_bot_version": "3.1.1"
 }

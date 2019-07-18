@@ -4,10 +4,10 @@
     ],
     "install_msg": "Core mod cog, minus the nickname tracking",
     "name": "Mod",
-    "disabled": false,
+    "disabled": true,
+    "hidden": true,
     "short": "",
     "description": "This stays up to date with core mod automatically, but without name/nick tracking.",
     "tags": [],
-    "hidden": false,
     "min_bot_version": "3.1.1"
 }
