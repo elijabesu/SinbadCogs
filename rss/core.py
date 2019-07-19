@@ -170,9 +170,9 @@ class RSS(commands.Cog):
 
         if template is None:
             if embed:
-                _template = "[$title]($link)"
+                _template = "$title: $link"
             else:
-                _template = "$title: <$link>"
+                _template = "$title: $link"
         else:
             _template = template
 
