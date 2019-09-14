@@ -155,13 +155,22 @@ class RSS(commands.Cog):
         last_sent = None
         for entry in to_send:
             color = destination.guild.me.color
+            maybe_rid = feed_settings.get("role", None)
+            if maybe_rid is not None:
+                role = destination.guild.get_role(int(maybe_rid))
+                if not role.mentionable:
+                    edit_role = True
+                else:
+                    edit_role = False
             kwargs = await self.format_post(
-                entry, use_embed, color, destination.guild, feed_settings.get("template", None), feed_settings.get("role", None)
+                entry, use_embed, color, destination.guild, feed_settings.get("template", None), maybe_rid
             )
             try:
                 await self.bot.send_filtered(destination, **kwargs)
             except discord.HTTPException:
                 continue
+            if edit_role is True:
+                await role.edit(mentionable=False)
             last_sent = list(self.process_entry_time(entry))
 
         return last_sent
@@ -208,7 +217,6 @@ class RSS(commands.Cog):
                 if not role.mentionable:
                     await role.edit(mentionable=True)
                     return {"content": f"{role.mention}", "embed": embed_data}
-                    await role.edit(mentionable=False)
                 else:
                     return {"content": f"{role.mention}", "embed": embed_data}
         else:
@@ -226,7 +234,6 @@ class RSS(commands.Cog):
                     else:
                         content = mention + content
                     return {"content": content, "embed": None}
-                    await role.edit(mentionable=False)
                 else:
                     mention = f"{role.mention} "
                     if len(content) > 1950:
