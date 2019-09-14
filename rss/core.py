@@ -169,9 +169,10 @@ class RSS(commands.Cog):
                 await self.bot.send_filtered(destination, **kwargs)
             except discord.HTTPException:
                 continue
+            last_sent = list(self.process_entry_time(entry))
+
             if edit_role is True:
                 await role.edit(mentionable=False)
-            last_sent = list(self.process_entry_time(entry))
 
         return last_sent
 
